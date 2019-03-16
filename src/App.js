@@ -1,42 +1,22 @@
-import React, { Component } from "react";
-import { createGameService, initialBoard } from "./gameOfLife";
+import React from "react";
+import { initialBoard } from "./gameOfLife";
+import useGame from "./useGame";
 
 import "./App.css";
 
-class App extends Component {
-  constructor(props) {
-    super(props);
+const App = () => {
+  const board = useGame(initialBoard);
 
-    this.gameService = createGameService(newBoard =>
-      this.setState({ board: newBoard })
-    );
-
-    this.state = {
-      board: initialBoard
-    };
-  }
-
-  componentDidMount() {
-    this.gameService.start();
-  }
-
-  componentWillUnmount() {
-    this.gameService.stop();
-  }
-
-  render() {
-    return (
-      <div className="App">
-        {this.state.board.map((row, i) => (
-          <div key={i} className="Row">
-            {row.map((value, j) => (
-              <div key={j} className={"Cell " + (value ? "alive" : "dead")} />
-            ))}
-          </div>
-        ))}
-      </div>
-    );
-  }
-}
-
+  return (
+    <div className="App">
+      {board.map((row, i) => (
+        <div key={i} className="Row">
+          {row.map((value, j) => (
+            <div key={j} className={"Cell " + (value ? "alive" : "dead")} />
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+};
 export default App;
