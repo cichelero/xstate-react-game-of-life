@@ -71,7 +71,7 @@ const gameMachine = Machine({
             states: {
               alive: {
                 on: {
-                  PLAY: [
+                  EVOLVE: [
                     { target: "dead", cond: underpopulation(i, j) },
                     { target: "dead", cond: overpopulation(i, j) }
                   ]
@@ -79,7 +79,7 @@ const gameMachine = Machine({
               },
               dead: {
                 on: {
-                  PLAY: {
+                  EVOLVE: {
                     target: "alive",
                     cond: reproduction(i, j)
                   }
@@ -108,7 +108,7 @@ export const createGameService = onBoardChange => {
       setTimeout(() => {
         times++;
         console.time(`iteration ${times}`);
-        gameService.send({ type: "PLAY", stateValue: state.value });
+        gameService.send({ type: "EVOLVE", stateValue: state.value });
       }, 1000)
     );
   });
