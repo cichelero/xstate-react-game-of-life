@@ -7,6 +7,7 @@ const useGame = initialBoard => {
   useEffect(() => {
     const game = createGameService(setBoard);
     game.start();
+    game.send("AUTO")
 
     return () => game.stop();
   }, []);

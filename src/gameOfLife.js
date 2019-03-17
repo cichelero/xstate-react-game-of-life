@@ -1,4 +1,6 @@
-import { Machine, interpret } from "xstate";
+import { Machine, interpret, actions } from "xstate";
+
+const { send } = actions
 
 const range = n => {
   const iter = (n, acc) => (n === 0 ? acc : iter(n - 1, [n, ...acc]));
@@ -51,14 +53,14 @@ const neighbourCount = (i, j, stateValue) =>
   ].reduce((acc, id) => (stateValue[id] === "alive" ? acc + 1 : acc), 0);
 
 const underpopulation = (i, j) => (ctx, event) =>
-  neighbourCount(i, j, event.stateValue) < 2;
+  neighbourCount(i, j, ctx.getStateValue()) < 2;
 const overpopulation = (i, j) => (ctx, event) =>
-  neighbourCount(i, j, event.stateValue) > 3;
+  neighbourCount(i, j, ctx.getStateValue()) > 3;
 const reproduction = (i, j) => (ctx, event) =>
-  neighbourCount(i, j, event.stateValue) === 3;
+  neighbourCount(i, j, ctx.getStateValue()) === 3;
 
-const gameMachine = Machine({
-  id: "game",
+const boardMachine = {
+  id: "boardMachine",
   type: "parallel",
   states: initialBoard.reduce(
     (acc, initialRow, i) => ({
@@ -93,25 +95,51 @@ const gameMachine = Machine({
     }),
     {}
   )
-});
+};
 
-let times = 0;
-console.time(`iteration ${0}`);
+const pulse = {
+  id: "pulse",
+  initial: "manual",
+  states: {
+    manual: {
+      on: {
+        AUTO: "auto",
+        STEP: {
+          actions: send("EVOLVE")
+        }
+      }
+    },
+    auto: {
+      after: {
+        1000: "auto"
+      },
+      onExit: send("EVOLVE"),
+      on: {
+        MANUAL: "manual"
+      }
+    }
+  }
+}
+
+const gameMachine = Machine({
+  id: "game",
+  type: "parallel",
+  states: {
+    pulse,
+    board: boardMachine
+  }
+})
+
 
 export const createGameService = onBoardChange => {
-  const gameService = interpret(gameMachine).onTransition(state => {
-    onBoardChange(stateToBoard(state.value));
+  const getStateValue = () => gameService.state.value.board
 
-    console.timeEnd(`iteration ${times}`);
+  const gameMachineWithState = gameMachine.withContext({getStateValue})
 
-    requestAnimationFrame(() =>
-      setTimeout(() => {
-        times++;
-        console.time(`iteration ${times}`);
-        gameService.send({ type: "EVOLVE", stateValue: state.value });
-      }, 1000)
-    );
+  const gameService = interpret(gameMachineWithState).onTransition(() => {
+    // console.log("state.value", state.value)
+    onBoardChange(stateToBoard(getStateValue()));
   });
 
-  return gameService;
+  return gameService
 };
