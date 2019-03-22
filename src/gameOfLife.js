@@ -1,6 +1,6 @@
 import { Machine, interpret, actions } from "xstate";
 
-const { send } = actions
+const { send } = actions;
 
 const range = n => {
   const iter = (n, acc) => (n === 0 ? acc : iter(n - 1, [n, ...acc]));
@@ -119,7 +119,7 @@ const pulse = {
       }
     }
   }
-}
+};
 
 const gameMachine = Machine({
   id: "game",
@@ -128,18 +128,17 @@ const gameMachine = Machine({
     pulse,
     board: boardMachine
   }
-})
-
+});
 
 export const createGameService = onBoardChange => {
-  const getStateValue = () => gameService.state.value.board
+  const getStateValue = () => gameService.state.value.board;
 
-  const gameMachineWithState = gameMachine.withContext({getStateValue})
+  const gameMachineWithState = gameMachine.withContext({ getStateValue });
 
   const gameService = interpret(gameMachineWithState).onTransition(() => {
     // console.log("state.value", state.value)
     onBoardChange(stateToBoard(getStateValue()));
   });
 
-  return gameService
+  return gameService;
 };
