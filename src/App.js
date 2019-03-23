@@ -1,11 +1,11 @@
-import React from "react";
-import { initialBoard } from "./gameOfLife";
-import useGame from "./useGame";
+import React from "react"
+import { initialBoard } from "./gameOfLife"
+import useGame from "./useGame"
 
-import "./App.css";
+import "./App.css"
 
 const App = () => {
-  const board = useGame(initialBoard);
+  const board = useGame(initialBoard)
 
   return (
     <div className="App">
@@ -17,6 +17,6 @@ const App = () => {
         </div>
       ))}
     </div>
-  );
-};
-export default App;
+  )
+}
+export default App
