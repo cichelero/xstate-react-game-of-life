@@ -2,9 +2,11 @@
 
 🐱project to test the capabilities of xstate to handle state of a react application.
 
+Idea: [DiesIrae](https://github.com/diesirae)
+
 ## Demo
 
-TODO
+[CodeSandBox](https://codesandbox.io/s/github/cichelero/xstate-react-game-of-life)
 
 ## WTF
 
